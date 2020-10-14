@@ -3,29 +3,6 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import DropDownList from './app/components/dropDownList/DrowDownList';
 
-// const myStocks = ['SVOL-B.ST'];
-// const myKEY = '0e9d6faee7msha19b9b9ffebf94fp1551d4jsn34f915bc0afa';
-
-// const doTheFetch = () => {
-//   fetch(
-//     'https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/get-charts?symbol=SVOL-B.ST&interval=5m&range=1d',
-//     {
-//       method: 'GET',
-//       headers: {
-//         'x-rapidapi-host': 'apidojo-yahoo-finance-v1.p.rapidapi.com',
-//         'x-rapidapi-key': '0e9d6faee7msha19b9b9ffebf94fp1551d4jsn34f915bc0afa',
-//       },
-//     }
-//   )
-//     .then((response) => {
-//       response.text((data) => {
-//         console.log(data);
-//       });
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// };
 
 const items = [
   {
