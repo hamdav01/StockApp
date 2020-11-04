@@ -9,14 +9,17 @@ import {
   not,
   prop,
   descend,
-  ifElse,
-  identity,
   reverse,
+  multiply,
+  subtract,
+  divide,
 } from 'ramda';
+import { toFixed } from '../utils/Functional';
 
 export const StockActions = {
   SORT: 'sort',
   SORT_BY_NAME: 'sortByName',
+  INIT: 'init',
 };
 const isString = is(String);
 const lowerString = when(isString, toLower);
@@ -35,8 +38,38 @@ const sortReducer = (state, action) => {
   };
 };
 
+const convertIntoPercentage = compose(
+  toFixed(2),
+  multiply(100),
+  subtract(1),
+  divide
+);
+
 export const stockReducer = (state, action) => {
   switch (action.type) {
+    case StockActions.INIT: {
+      const stocks = action.data.map((data) => {
+        console.log('data: ', data);
+        if (data === null) {
+          return {
+            today: 1,
+            price: 1,
+            name: 'undefined',
+          };
+        }
+        const {
+          previousClose,
+          regularMarketPrice,
+          symbol,
+        } = data.chart.result[0].meta;
+        return {
+          today: convertIntoPercentage(previousClose, regularMarketPrice),
+          price: regularMarketPrice,
+          name: symbol,
+        };
+      });
+      return { ...state, stocks };
+    }
     case StockActions.SORT: {
       return sortReducer(state, action);
     }

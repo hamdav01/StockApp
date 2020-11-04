@@ -1,4 +1,4 @@
-import { cond, __, always } from 'ramda';
+import { cond, __, always, append } from 'ramda';
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import {
@@ -19,10 +19,13 @@ const getColor = cond([
   [isGreaterThanZero, always('green')],
 ]);
 
+const addPercentageSign = append(' %');
 const PriceStockRowItem = ({ today }) => {
   const colorStyle = getColor(today);
   return (
-    <Text style={[styles[colorStyle], styles.rowItemAlignLeft]}>{today}</Text>
+    <Text style={[styles[colorStyle], styles.rowItemAlignLeft]}>
+      {addPercentageSign(today)}
+    </Text>
   );
 };
 
