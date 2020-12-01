@@ -22,14 +22,16 @@ export const StockActions = {
   INIT: 'init',
 };
 const isString = is(String);
-const lowerString = when(isString, toLower);
+const lowerCaseString = when(isString, toLower);
 
 const sortReducer = (state, action) => {
   const { sortKey } = action;
   const { activeKey = '', stocks: currentStocks, isDecending = false } = state;
   const isNewSortKey = not(equals(activeKey, sortKey));
   const direction = isNewSortKey ? descend : isDecending ? ascend : descend;
-  const sortTheStocks = sort(direction(compose(lowerString, prop(sortKey))));
+  const sortTheStocks = sort(
+    direction(compose(lowerCaseString, prop(sortKey)))
+  );
   const newDecendingState = isNewSortKey ? true : !isDecending;
   return {
     stocks: sortTheStocks(currentStocks),
@@ -48,8 +50,8 @@ const convertIntoPercentage = compose(
 export const stockReducer = (state, action) => {
   switch (action.type) {
     case StockActions.INIT: {
+      console.log('action.data: ', action.data);
       const stocks = action.data.map((data) => {
-        console.log('data: ', data);
         if (data === null) {
           return {
             today: 1,
