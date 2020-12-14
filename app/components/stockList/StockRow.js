@@ -21,10 +21,11 @@ const getColor = cond([
 
 const addPercentageSign = append(' %');
 const PriceStockRowItem = ({ today }) => {
-  const colorStyle = getColor(today);
+  const todayString = String(today);
+  const colorStyle = getColor(todayString);
   return (
     <Text style={[styles[colorStyle], styles.rowItemAlignLeft]}>
-      {addPercentageSign(today)}
+      {addPercentageSign(todayString)}
     </Text>
   );
 };

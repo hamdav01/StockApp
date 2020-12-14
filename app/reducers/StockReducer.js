@@ -29,9 +29,11 @@ const sortReducer = (state, action) => {
   const { activeKey = '', stocks: currentStocks, isDecending = false } = state;
   const isNewSortKey = not(equals(activeKey, sortKey));
   const direction = isNewSortKey ? descend : isDecending ? ascend : descend;
+  console.log(currentStocks);
   const sortTheStocks = sort(
     direction(compose(lowerCaseString, prop(sortKey)))
   );
+
   const newDecendingState = isNewSortKey ? true : !isDecending;
   return {
     stocks: sortTheStocks(currentStocks),
@@ -41,6 +43,7 @@ const sortReducer = (state, action) => {
 };
 
 const convertIntoPercentage = compose(
+  Number,
   toFixed(2),
   multiply(100),
   subtract(1),
@@ -50,24 +53,13 @@ const convertIntoPercentage = compose(
 export const stockReducer = (state, action) => {
   switch (action.type) {
     case StockActions.INIT: {
-      console.log('action.data: ', action.data);
       const stocks = action.data.map((data) => {
-        if (data === null) {
-          return {
-            today: 1,
-            price: 1,
-            name: 'undefined',
-          };
-        }
-        const {
-          previousClose,
-          regularMarketPrice,
-          symbol,
-        } = data.chart.result[0].meta;
+        const { chart, name } = data;
+        const { previousClose, regularMarketPrice } = chart.result[0].meta;
         return {
+          name,
           today: convertIntoPercentage(previousClose, regularMarketPrice),
           price: regularMarketPrice,
-          name: symbol,
         };
       });
       return { ...state, stocks };

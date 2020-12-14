@@ -3,46 +3,24 @@ import {
   View,
   Text,
   TouchableHighlight,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
-import { compose, sort, prop, toLower, ascend, descend } from 'ramda';
+import React from 'react';
 import { StockActions } from '../../reducers/StockReducer';
 
-const StockHeaderRowItem = ({ type, dispatchData }) => {
-  // const [decend, setDecend] = useState(ascend);
-  // const [active, setActive] = useState(false);
-  // const sortByNumber = () => {
-  //   const sortingFunction = active ? descend : ascend;
-  //   dispatchData({
-  //     sort: compose(ascend, prop(type)),
-  //     type: StockActions.sort,
-  //   });
-  //   setActive(true);
-  // };
-
-  return (
-    <TouchableHighlight style={styles.rowItem2} onPress={sortByNumber}>
-      <Text>Today</Text>
-    </TouchableHighlight>
-  );
-};
-
 const StockHeaderRow = ({ dispatchData }) => {
-  // const [sorting, setSortingState] = useState(false)
-
   const sortByNameCaseInsensitive = () =>
     dispatchData({
       sortKey: 'name',
       type: StockActions.SORT_BY_NAME,
     });
 
-  const sortByNumber = () =>
+  const sortByTodayPrice = () =>
     dispatchData({
       sortKey: 'today',
       type: StockActions.SORT,
     });
-  const sortByNumber2 = () =>
+  const sortByPrice = () =>
     dispatchData({
       sortKey: 'price',
       type: StockActions.SORT,
@@ -50,18 +28,18 @@ const StockHeaderRow = ({ dispatchData }) => {
 
   return (
     <View style={styles.row}>
-      <TouchableHighlight
+      <TouchableOpacity
         style={styles.rowItemName}
         onPress={sortByNameCaseInsensitive}
       >
         <Text>Name</Text>
-      </TouchableHighlight>
-      <TouchableHighlight style={styles.rowItem} onPress={sortByNumber}>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.rowItem} onPress={sortByTodayPrice}>
         <Text>Today</Text>
-      </TouchableHighlight>
-      <TouchableHighlight style={styles.rowItem} onPress={sortByNumber2}>
-        <Text>price</Text>
-      </TouchableHighlight>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.rowItem} onPress={sortByPrice}>
+        <Text>Price</Text>
+      </TouchableOpacity>
     </View>
   );
 };

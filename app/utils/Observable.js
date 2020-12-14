@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { fromFetch } from 'rxjs/fetch';
-import { of, Observable, from, merge } from 'rxjs';
-import { catchError, switchMap, mergeMap, map } from 'rxjs/operators';
+import { of, Observable, from } from 'rxjs';
+import { catchError, switchMap, mergeMap, toArray } from 'rxjs/operators';
 
 export const getItemAsyncStorage = (key) => {
   return new Observable((subscriber) => {
@@ -17,9 +17,9 @@ export const getItemAsyncStorage = (key) => {
 
 export const createFromFetchObservables = (key, concurrent = 4) =>
   getItemAsyncStorage(key).pipe(
-    map((symbols) => symbols.map(({ symbol }) => symbol)),
     mergeMap(from),
-    mergeMap(createFromFetchObservable, concurrent)
+    mergeMap(createFromFetchObservable, concurrent),
+    toArray()
   );
 
 export const setItemAsyncStorage = (key, value) => {
@@ -31,7 +31,7 @@ export const setItemAsyncStorage = (key, value) => {
   });
 };
 
-export const createFromFetchObservable = (symbol) =>
+export const createFromFetchObservable = ({ symbol, name }) =>
   fromFetch(
     `https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/get-charts?symbol=${symbol}&interval=5m&range=1d`,
     {
@@ -45,7 +45,9 @@ export const createFromFetchObservable = (symbol) =>
     switchMap((response) => {
       if (response.ok) {
         // OK return data
-        return response.json();
+        return response.json().then((result) => {
+          return Promise.resolve({ name, ...result });
+        });
       } else {
         // Server is returning a status requiring the client to try something else.
         return of({ error: true, message: `Error ${response.status}` });
