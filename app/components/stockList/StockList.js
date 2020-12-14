@@ -5,8 +5,6 @@ import StockHeaderRow from './StockHeaderRow';
 import { createRenderStockRow } from './StockRow';
 import { FlatListWrapper } from '../flatListWrapper/FlatListWrapper';
 import { StockActions, stockReducer } from '../../reducers/StockReducer';
-import AsyncStorage from '@react-native-community/async-storage';
-import { andThen, compose, map, take } from 'ramda';
 import {
   getItemAsyncStorage,
   createFromFetchObservable,

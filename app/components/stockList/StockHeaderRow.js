@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { StockActions } from '../../reducers/StockReducer';
 
@@ -32,13 +26,13 @@ const StockHeaderRow = ({ dispatchData }) => {
         style={styles.rowItemName}
         onPress={sortByNameCaseInsensitive}
       >
-        <Text>Name</Text>
+        <Text style={styles.text}>Name</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.rowItem} onPress={sortByTodayPrice}>
-        <Text>Today</Text>
+        <Text style={styles.text}>Today</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.rowItem} onPress={sortByPrice}>
-        <Text>Price</Text>
+        <Text style={styles.text}>Price</Text>
       </TouchableOpacity>
     </View>
   );
@@ -46,11 +40,12 @@ const StockHeaderRow = ({ dispatchData }) => {
 
 const styles = StyleSheet.create({
   rowItemName: {
-    fontWeight: 'bold',
     flex: 0.8,
   },
-  rowItem: {
+  text: {
     fontWeight: 'bold',
+  },
+  rowItem: {
     flex: 0.1,
     textAlign: 'Right',
   },
