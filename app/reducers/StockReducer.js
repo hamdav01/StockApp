@@ -20,6 +20,7 @@ export const StockActions = {
   SORT: 'sort',
   SORT_BY_NAME: 'sortByName',
   INIT: 'init',
+  SET: 'set',
 };
 const isString = is(String);
 const lowerCaseString = when(isString, toLower);
@@ -50,9 +51,14 @@ const convertIntoPercentage = compose(
   divide
 );
 
+export const setStocksAction = (stocks) => ({
+  type: StockActions.SET,
+  data: stocks,
+});
+
 export const stockReducer = (state, action) => {
   switch (action.type) {
-    case StockActions.INIT: {
+    case StockActions.SET: {
       const stocks = action.data.map((data) => {
         const { chart, name } = data;
         const { previousClose, regularMarketPrice } = chart.result[0].meta;

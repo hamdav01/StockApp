@@ -1,21 +1,12 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { fromFetch } from 'rxjs/fetch';
 import { of, Observable, from } from 'rxjs';
-import { catchError, switchMap, mergeMap, toArray } from 'rxjs/operators';
+import { catchError, switchMap, mergeMap, toArray, map } from 'rxjs/operators';
 
-export const getItemAsyncStorage = (key) => {
-  return new Observable((subscriber) => {
-    AsyncStorage.getItem(key).then((value) => {
-      subscriber.next(JSON.parse(value));
-      subscriber.complete();
-    });
-  });
-};
+export const getItemAsyncStorage = (key) =>
+  from(AsyncStorage.getItem(key)).pipe(map(JSON.parse));
 
-// export const createFromFetchObservables = (symbols, concurrent = 4) =>
-//   from(symbols).pipe(mergeMap(createFromFetchObservable, concurrent));
-
-export const createFromFetchObservables = (key, concurrent = 4) =>
+export const createFromFetchObservables = (key, concurrent = 3) =>
   getItemAsyncStorage(key).pipe(
     mergeMap(from),
     mergeMap(createFromFetchObservable, concurrent),

@@ -2,20 +2,20 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { StockActions } from '../../reducers/StockReducer';
 
-const StockHeaderRow = ({ dispatchData }) => {
+const StockHeaderRow = ({ filterDispatch }) => {
   const sortByNameCaseInsensitive = () =>
-    dispatchData({
+    filterDispatch({
       sortKey: 'name',
       type: StockActions.SORT_BY_NAME,
     });
 
   const sortByTodayPrice = () =>
-    dispatchData({
+    filterDispatch({
       sortKey: 'today',
       type: StockActions.SORT,
     });
   const sortByPrice = () =>
-    dispatchData({
+    filterDispatch({
       sortKey: 'price',
       type: StockActions.SORT,
     });
