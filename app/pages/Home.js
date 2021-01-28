@@ -3,8 +3,10 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  Animated,
+  Text,
 } from 'react-native';
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import Header from '../components/header/Header';
 import StockList from '../components/stockList/StockList';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
@@ -38,20 +40,43 @@ const useAsynchStorage = () => {
 
 export default function Home() {
   const [currentStocks, dispatchData] = useAsynchStorage();
+  const rotation = useRef(new Animated.Value(0)).current;
+  const interpolateRotation = rotation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+  interpolateRotation.addListener((data) => {
+    console.log('data', data);
+  });
   const test = () => {
-    createFromFetchObservables(AsyncKeys.STOCK_KEYS).subscribe((data) => {
-      console.log('data:', data);
-      dispatchData({ type: StockActions.INIT, data });
-    });
+    //createFromFetchObservables(AsyncKeys.STOCK_KEYS).subscribe((data) => {
+    //console.log('data:', data);
+    // dispatchData({ type: StockActions.INIT, data });
+    // });
+    Animated.timing(rotation, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true, // To make use of native driver for performance
+    }).start();
   };
   return (
     <View>
       <View style={styles.stockListArea}>
         <View style={styles.header}>
           <Header header={'StockList'} />
-          <TouchableOpacity onPress={test}>
-            <FontAwesome name='refresh' size={32} color='black' />
-          </TouchableOpacity>
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  rotate: interpolateRotation,
+                },
+              ],
+            }}
+          >
+            <TouchableOpacity onPress={test}>
+              <FontAwesome name='refresh' size={32} color='black' />
+            </TouchableOpacity>
+          </Animated.View>
         </View>
         <StockList
           stocks={currentStocks.stocks}
