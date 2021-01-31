@@ -19,7 +19,6 @@ import { toFixed } from '../utils/Functional';
 export const StockActions = {
   SORT: 'sort',
   SORT_BY_NAME: 'sortByName',
-  INIT: 'init',
   SET: 'set',
 };
 const isString = is(String);
@@ -59,8 +58,12 @@ export const setStocksAction = (stocks) => ({
 export const stockReducer = (state, action) => {
   switch (action.type) {
     case StockActions.SET: {
-      const stocks = action.data.map((data) => {
+      const data = action.data || [];
+      const stocks = data.flatMap((data) => {
         const { chart, name } = data;
+        if (chart.error !== null) {
+          return [];
+        }
         const { previousClose, regularMarketPrice } = chart.result[0].meta;
         return {
           name,

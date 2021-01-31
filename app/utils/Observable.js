@@ -1,7 +1,14 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { fromFetch } from 'rxjs/fetch';
-import { of, Observable, from } from 'rxjs';
-import { catchError, switchMap, mergeMap, toArray, map } from 'rxjs/operators';
+import { from } from 'rxjs';
+import {
+  catchError,
+  switchMap,
+  mergeMap,
+  toArray,
+  map,
+  filter,
+} from 'rxjs/operators';
 
 export const getItemAsyncStorage = (key) =>
   from(AsyncStorage.getItem(key)).pipe(map(JSON.parse));
@@ -13,14 +20,8 @@ export const createFromFetchObservables = (key, concurrent = 3) =>
     toArray()
   );
 
-export const setItemAsyncStorage = (key, value) => {
-  return new Observable((subscriber) => {
-    AsyncStorage.setItem(key, JSON.stringify(value)).then((result) => {
-      subscriber.next(result);
-      subscriber.complete();
-    });
-  });
-};
+export const setItemAsyncStorage = (key, value) =>
+  from(AsyncStorage.setItem(key, JSON.stringify(value)));
 
 export const createFromFetchObservable = ({ symbol, name }) =>
   fromFetch(
@@ -35,16 +36,31 @@ export const createFromFetchObservable = ({ symbol, name }) =>
   ).pipe(
     switchMap((response) => {
       if (response.ok) {
-        // OK return data
         return response.json().then((result) => {
-          return Promise.resolve({ name, ...result });
+          if (result.chart.error !== null) {
+            return Promise.resolve({
+              error: true,
+              message: result.chart.error,
+            });
+          }
+          return Promise.resolve({ error: false, name, ...result });
         });
-      } else {
-        // Server is returning a status requiring the client to try something else.
-        return of({ error: true, message: `Error ${response.status}` });
       }
+      return Promise.resolve({
+        error: true,
+        message: `Error ${response.status}`,
+      });
     }),
-    catchError((err) => {
-      return of({ error: true, message: err.message });
-    })
+    catchError((errorMessage) =>
+      Promise.resolve({
+        error: true,
+        message: errorMessage,
+      })
+    ),
+    filter(({ error }) => !error)
   );
+
+export const StorageKeys = {
+  STOCKS: 'stocks',
+  STOCK_KEYS: '@stock_keys',
+};

@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
   rowItem: {
     flex: 0.1,
-    textAlign: 'Right',
+    textAlign: 'right',
   },
   row: {
     flexDirection: 'row',
