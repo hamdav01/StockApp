@@ -20,6 +20,8 @@ export const StockActions = {
   SORT: 'sort',
   SORT_BY_NAME: 'sortByName',
   SET: 'set',
+  ADD: 'add',
+  DELETE: 'delete',
 };
 const isString = is(String);
 const lowerCaseString = when(isString, toLower);
@@ -55,10 +57,19 @@ export const setStocksAction = (stocks) => ({
   data: stocks,
 });
 
+export const addStockAction = (stock) => ({
+  type: StockActions.ADD,
+  data: stock,
+});
+
+export const deleteStockAction = (stock) => ({
+  type: StockActions.DELETE,
+  data: stock,
+});
+
 export const stockReducer = (state, action) => {
   switch (action.type) {
     case StockActions.SET: {
-      console.log('data: ', action.data);
       const data = action.data || [];
       const stocks = data.flatMap((data) => {
         const { chart, name } = data;
@@ -73,6 +84,22 @@ export const stockReducer = (state, action) => {
         };
       });
       return { ...state, stocks };
+    }
+    case StockActions.ADD: {
+      const { chart, name } = action.data;
+      if (chart.error !== null) {
+        return state;
+      }
+      const { previousClose, regularMarketPrice } = chart.result[0].meta;
+      const currentStockValue = {
+        name,
+        today: convertIntoPercentage(previousClose, regularMarketPrice),
+        price: regularMarketPrice,
+      };
+      return { ...state, stocks: [...state.stocks, currentStockValue] };
+    }
+    case StockActions.DELETE: {
+      return state;
     }
     case StockActions.SORT: {
       return sortReducer(state, action);

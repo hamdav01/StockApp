@@ -1,10 +1,18 @@
-import { View, TouchableWithoutFeedback } from 'react-native';
+import { View } from 'react-native';
 import React, { useEffect, useReducer } from 'react';
 import Header from '../../components/header/Header';
 import StockList from '../../components/stockList/StockList';
-import { Ionicons } from '@expo/vector-icons';
-import { stockReducer, setStocksAction } from '../../reducers/StockReducer';
-import { getItemAsyncStorage, StorageKeys } from '../../utils/Observable';
+import {
+  stockReducer,
+  setStocksAction,
+  addStockAction,
+} from '../../reducers/StockReducer';
+import {
+  createFromFetchObservable,
+  getItemAsyncStorage,
+  setItemAsyncStorage,
+  StorageKeys,
+} from '../../utils/Observable';
 import { map } from 'rxjs/operators';
 import { styles } from './Styles';
 import AnimatedRefresh from '../../components/animatedRefresh/AnimatedRefresh';
@@ -14,6 +22,7 @@ const useAsynchStorage = () => {
     stocks: [],
   });
   useEffect(() => {
+    console.log('useAsynchStorage');
     getItemAsyncStorage(StorageKeys.STOCKS)
       .pipe(map(setStocksAction))
       .subscribe(dispatchData);
@@ -21,8 +30,20 @@ const useAsynchStorage = () => {
   return [currentStocks, dispatchData];
 };
 
-export default function HomeScreen() {
+export default function HomeScreen({ route }) {
   const [currentStocks, dispatchData] = useAsynchStorage();
+
+  React.useEffect(() => {
+    const stock = route.params?.stock;
+    if (stock !== undefined) {
+      createFromFetchObservable(stock).subscribe((data) => {
+        console.log('currentStocks: ', currentStocks);
+        console.log('data: ', data);
+        dispatchData(addStockAction(data));
+        // setItemAsyncStorage(StorageKeys.STOCKS, data);
+      });
+    }
+  }, [route.params?.stock]);
   return (
     <View style={styles.container}>
       <View style={styles.stockListArea}>
@@ -61,7 +82,7 @@ const mySymbols = [
     name: 'VnV Global',
   },
   {
-    symbol: 'VEMF-SDB.ST', //TODO: Something else
+    symbol: '', //TODO: Something else
     name: 'Vostok Emerging Finance',
   },
   {
