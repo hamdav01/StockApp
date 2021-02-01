@@ -58,6 +58,7 @@ export const setStocksAction = (stocks) => ({
 export const stockReducer = (state, action) => {
   switch (action.type) {
     case StockActions.SET: {
+      console.log('data: ', action.data);
       const data = action.data || [];
       const stocks = data.flatMap((data) => {
         const { chart, name } = data;

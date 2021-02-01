@@ -1,13 +1,13 @@
 import { View, TouchableWithoutFeedback } from 'react-native';
 import React, { useEffect, useReducer } from 'react';
-import Header from '../components/header/Header';
-import StockList from '../components/stockList/StockList';
+import Header from '../../components/header/Header';
+import StockList from '../../components/stockList/StockList';
 import { Ionicons } from '@expo/vector-icons';
-import { stockReducer, setStocksAction } from '../reducers/StockReducer';
-import { getItemAsyncStorage, StorageKeys } from '../utils/Observable';
+import { stockReducer, setStocksAction } from '../../reducers/StockReducer';
+import { getItemAsyncStorage, StorageKeys } from '../../utils/Observable';
 import { map } from 'rxjs/operators';
 import { styles } from './Styles';
-import AnimatedRefresh from '../components/animatedRefresh/AnimatedRefresh';
+import AnimatedRefresh from '../../components/animatedRefresh/AnimatedRefresh';
 
 const useAsynchStorage = () => {
   const [currentStocks, dispatchData] = useReducer(stockReducer, {
@@ -16,15 +16,15 @@ const useAsynchStorage = () => {
   useEffect(() => {
     getItemAsyncStorage(StorageKeys.STOCKS)
       .pipe(map(setStocksAction))
-      .subscribe();
+      .subscribe(dispatchData);
   }, []);
   return [currentStocks, dispatchData];
 };
 
-export default function Home() {
+export default function HomeScreen() {
   const [currentStocks, dispatchData] = useAsynchStorage();
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.stockListArea}>
         <View style={styles.header}>
           <Header header={'StockList'} />
@@ -34,16 +34,6 @@ export default function Home() {
           stocks={currentStocks.stocks}
           filterDispatch={dispatchData}
         />
-      </View>
-      <View style={styles.buttonArea}>
-        <TouchableWithoutFeedback
-          size={120}
-          onPress={() => {
-            console.log('pressed ');
-          }}
-        >
-          <Ionicons name='ios-add-circle-outline' size={120} color='black' />
-        </TouchableWithoutFeedback>
       </View>
     </View>
   );
