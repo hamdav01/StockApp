@@ -3,6 +3,7 @@ import React from 'react';
 import { StockActions } from '../../reducers/StockReducer';
 
 const StockHeaderRow = ({ filterDispatch }) => {
+  
   const sortByNameCaseInsensitive = () =>
     filterDispatch({
       sortKey: 'name',

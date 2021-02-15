@@ -23,6 +23,12 @@ export const createFromFetchObservables = (key, concurrent = 3) =>
 export const setItemAsyncStorage = (key, value) =>
   from(AsyncStorage.setItem(key, JSON.stringify(value)));
 
+export const createFromFetchObservablesArray = (symbolsNames, concurrent = 3) =>
+  from(symbolsNames).pipe(
+    mergeMap(createFromFetchObservable, concurrent),
+    toArray()
+  );
+
 export const createFromFetchObservable = ({ symbol, name }) =>
   fromFetch(
     `https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/get-charts?symbol=${symbol}&interval=5m&range=1d`,
@@ -43,7 +49,7 @@ export const createFromFetchObservable = ({ symbol, name }) =>
               message: result.chart.error,
             });
           }
-          return Promise.resolve({ error: false, name, ...result });
+          return Promise.resolve({ error: false, name, symbol, ...result });
         });
       }
       return Promise.resolve({

@@ -1,14 +1,17 @@
 import { TouchableOpacity, Animated } from 'react-native';
 import React, { useRef } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { setStocksAction } from '../../reducers/StockReducer';
 import {
-  createFromFetchObservables,
+  getAllSymbolsSelector,
+  setStocksAction,
+} from '../../reducers/StockReducer';
+import {
+  createFromFetchObservablesArray,
   setItemAsyncStorage,
 } from '../../utils/Observable';
 import { StorageKeys } from '../../utils/Observable';
 
-const AnimatedRefresh = ({ dispatchData }) => {
+const AnimatedRefresh = ({ dispatchData, stocks }) => {
   const rotation = useRef(new Animated.Value(0)).current;
   const interpolateRotation = rotation.interpolate({
     inputRange: [0, 1],
@@ -25,11 +28,13 @@ const AnimatedRefresh = ({ dispatchData }) => {
       ])
     );
     refreshAnimation.start();
-    createFromFetchObservables(StorageKeys.STOCK_KEYS).subscribe((data) => {
-      refreshAnimation.stop();
-      dispatchData(setStocksAction(data));
-      setItemAsyncStorage(StorageKeys.STOCKS, data).subscribe();
-    });
+    createFromFetchObservablesArray(getAllSymbolsSelector(stocks)).subscribe(
+      (data) => {
+        refreshAnimation.stop();
+        dispatchData(setStocksAction(data));
+        setItemAsyncStorage(StorageKeys.STOCKS, data).subscribe();
+      }
+    );
   };
 
   return (

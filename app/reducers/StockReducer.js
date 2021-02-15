@@ -13,7 +13,11 @@ import {
   multiply,
   subtract,
   divide,
+  map,
+  pick,
+  any,
 } from 'ramda';
+import { isNumber } from '../utils/Checks';
 import { toFixed } from '../utils/Functional';
 
 export const StockActions = {
@@ -31,7 +35,6 @@ const sortReducer = (state, action) => {
   const { activeKey = '', stocks: currentStocks, isDecending = false } = state;
   const isNewSortKey = not(equals(activeKey, sortKey));
   const direction = isNewSortKey ? descend : isDecending ? ascend : descend;
-  console.log(currentStocks);
   const sortTheStocks = sort(
     direction(compose(lowerCaseString, prop(sortKey)))
   );
@@ -67,39 +70,59 @@ export const deleteStockAction = (stock) => ({
   data: stock,
 });
 
+const getGetStockInformation = ({ chart, name }) => {
+  if (chart.error !== null) {
+    return [];
+  }
+  const { previousClose, regularMarketPrice, symbol } = chart.result[0].meta;
+  const validate = isNumber(previousClose) && isNumber(regularMarketPrice);
+  if (!validate) {
+    return [];
+  }
+  return [
+    {
+      name,
+      symbol,
+      today: convertIntoPercentage(previousClose, regularMarketPrice),
+      price: regularMarketPrice,
+    },
+  ];
+};
+
+export const getAllSymbolsSelector = compose(
+  map(pick(['symbol', 'name'])),
+  prop('stocks')
+);
+
 export const stockReducer = (state, action) => {
   switch (action.type) {
     case StockActions.SET: {
       const data = action.data || [];
-      const stocks = data.flatMap((data) => {
-        const { chart, name } = data;
-        if (chart.error !== null) {
-          return [];
-        }
-        const { previousClose, regularMarketPrice } = chart.result[0].meta;
-        return {
-          name,
-          today: convertIntoPercentage(previousClose, regularMarketPrice),
-          price: regularMarketPrice,
-        };
-      });
+      const stocks = data.flatMap(getGetStockInformation);
       return { ...state, stocks };
     }
     case StockActions.ADD: {
-      const { chart, name } = action.data;
-      if (chart.error !== null) {
-        return state;
+      const [stock] = getGetStockInformation(action.data);
+      if (stock !== undefined) {
+        const stockExists = any(
+          compose(equals(stock.symbol), prop('symbol')),
+          state.stocks
+        );
+        if (stockExists) {
+          return state;
+        }
+        return {
+          ...state,
+          stocks: [...state.stocks, stock],
+        };
       }
-      const { previousClose, regularMarketPrice } = chart.result[0].meta;
-      const currentStockValue = {
-        name,
-        today: convertIntoPercentage(previousClose, regularMarketPrice),
-        price: regularMarketPrice,
-      };
-      return { ...state, stocks: [...state.stocks, currentStockValue] };
+      return state;
     }
     case StockActions.DELETE: {
-      return state;
+      return {
+        ...state,
+        stocks: filter(compose(not, equals(action.data), prop('name'))),
+      };
     }
     case StockActions.SORT: {
       return sortReducer(state, action);

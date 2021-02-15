@@ -1,16 +1,35 @@
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, TextInput } from 'react-native';
 import React from 'react';
+import { styles } from './Styles';
+import Header from '../../components/header/Header';
 
 const AddStockScreen = ({ navigation }) => {
+  const [stockName, onStockNameTextChange] = React.useState(
+    'Enter name of stock'
+  );
+  const [symbol, onSymbolTextChange] = React.useState('Enter symbol of stock');
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
+    <View style={styles.container}>
+      <Header header='Add a stock!' />
+      <TextInput
+        style={styles.textInput}
+        onChangeText={onStockNameTextChange}
+        onFocus={() => onStockNameTextChange('')}
+        value={stockName}
+      />
+      <TextInput
+        style={styles.textInput}
+        onChangeText={onSymbolTextChange}
+        onFocus={() => onSymbolTextChange('')}
+        value={symbol}
+      />
       <Button
-        title='Done'
+        title='Submit'
         onPress={() => {
           // Pass params back to home screen
           navigation.navigate('Home', {
-            stock: { symbol: 'VEFL-SDB.ST', name: 'VEF Ltd' },
+            stock: { symbol: symbol, name: stockName },
+            //   stock: { symbol: 'VEFL-SDB.ST', name: 'VEF Ltd' },
           });
         }}
       />

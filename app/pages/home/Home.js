@@ -10,7 +10,6 @@ import {
 import {
   createFromFetchObservable,
   getItemAsyncStorage,
-  setItemAsyncStorage,
   StorageKeys,
 } from '../../utils/Observable';
 import { map } from 'rxjs/operators';
@@ -22,11 +21,11 @@ const useAsynchStorage = () => {
     stocks: [],
   });
   useEffect(() => {
-    console.log('useAsynchStorage');
     getItemAsyncStorage(StorageKeys.STOCKS)
       .pipe(map(setStocksAction))
       .subscribe(dispatchData);
   }, []);
+
   return [currentStocks, dispatchData];
 };
 
@@ -37,10 +36,9 @@ export default function HomeScreen({ route }) {
     const stock = route.params?.stock;
     if (stock !== undefined) {
       createFromFetchObservable(stock).subscribe((data) => {
-        console.log('currentStocks: ', currentStocks);
-        console.log('data: ', data);
+        console.log('add stock now', stock);
         dispatchData(addStockAction(data));
-        // setItemAsyncStorage(StorageKeys.STOCKS, data);
+        //  setItemAsyncStorage(StorageKeys.STOCKS, data);
       });
     }
   }, [route.params?.stock]);
@@ -49,7 +47,7 @@ export default function HomeScreen({ route }) {
       <View style={styles.stockListArea}>
         <View style={styles.header}>
           <Header header={'StockList'} />
-          <AnimatedRefresh dispatchData={dispatchData} />
+          <AnimatedRefresh dispatchData={dispatchData} stocks={currentStocks} />
         </View>
         <StockList
           stocks={currentStocks.stocks}
