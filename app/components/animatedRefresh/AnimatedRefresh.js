@@ -32,7 +32,8 @@ const AnimatedRefresh = ({ dispatchData, stocks }) => {
       (data) => {
         refreshAnimation.stop();
         dispatchData(setStocksAction(data));
-        setItemAsyncStorage(StorageKeys.STOCKS, data).subscribe();
+        console.log('data: ', data);
+        //    setItemAsyncStorage(StorageKeys.STOCKS, data).subscribe();
       }
     );
   };

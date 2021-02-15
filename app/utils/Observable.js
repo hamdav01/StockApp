@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { fromFetch } from 'rxjs/fetch';
-import { from } from 'rxjs';
+import { forkJoin, from } from 'rxjs';
 import {
   catchError,
   switchMap,
@@ -8,7 +8,10 @@ import {
   toArray,
   map,
   filter,
+  mapTo,
+  tap,
 } from 'rxjs/operators';
+import { curry } from 'ramda';
 
 export const getItemAsyncStorage = (key) =>
   from(AsyncStorage.getItem(key)).pipe(map(JSON.parse));
@@ -20,14 +23,23 @@ export const createFromFetchObservables = (key, concurrent = 3) =>
     toArray()
   );
 
-export const setItemAsyncStorage = (key, value) =>
-  from(AsyncStorage.setItem(key, JSON.stringify(value)));
+export const setItemAsyncStorage = curry((key, value) =>
+  from(AsyncStorage.setItem(key, JSON.stringify(value))).pipe(mapTo(value))
+);
 
 export const createFromFetchObservablesArray = (symbolsNames, concurrent = 3) =>
   from(symbolsNames).pipe(
     mergeMap(createFromFetchObservable, concurrent),
-    toArray()
+    toArray(),
+    mergeMap(setItemAsyncStorage(StorageKeys.STOCKS))
   );
+
+export const createFromFetchObservableSave = ({ symbol, name }) => {
+  return forkJoin({
+    fetch: createFromFetchObservable({ symbol, name }),
+    storage: getItemAsyncStorage(StorageKeys.STOCKS),
+  }).pipe(tap((data) => console.log('data: ', data)));
+};
 
 export const createFromFetchObservable = ({ symbol, name }) =>
   fromFetch(

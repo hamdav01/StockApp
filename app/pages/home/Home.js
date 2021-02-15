@@ -8,7 +8,7 @@ import {
   addStockAction,
 } from '../../reducers/StockReducer';
 import {
-  createFromFetchObservable,
+  createFromFetchObservableSave,
   getItemAsyncStorage,
   StorageKeys,
 } from '../../utils/Observable';
@@ -35,13 +35,14 @@ export default function HomeScreen({ route }) {
   React.useEffect(() => {
     const stock = route.params?.stock;
     if (stock !== undefined) {
-      createFromFetchObservable(stock).subscribe((data) => {
-        console.log('add stock now', stock);
+      createFromFetchObservableSave(stock).subscribe((data) => {
+        console.log('adtA:', data);
         dispatchData(addStockAction(data));
         //  setItemAsyncStorage(StorageKeys.STOCKS, data);
       });
     }
   }, [route.params?.stock]);
+
   return (
     <View style={styles.container}>
       <View style={styles.stockListArea}>
@@ -57,50 +58,3 @@ export default function HomeScreen({ route }) {
     </View>
   );
 }
-
-const mySymbols = [
-  {
-    symbol: 'SVOL-B.ST',
-    name: 'Svolder',
-  },
-  {
-    symbol: 'BEIA-B.ST',
-    name: 'Beijer alma',
-  },
-  {
-    symbol: 'KIND-SDB.ST',
-    name: 'Kindred',
-  },
-  {
-    symbol: 'KINV-B.ST',
-    name: 'Kinnevik',
-  },
-  {
-    symbol: 'VNV.ST',
-    name: 'VnV Global',
-  },
-  {
-    symbol: '', //TODO: Something else
-    name: 'Vostok Emerging Finance',
-  },
-  {
-    symbol: 'EVO.ST',
-    name: 'Evolution Gaming',
-  },
-  {
-    symbol: 'BETCO.ST',
-    name: 'Better Collective',
-  },
-  {
-    symbol: 'NOTE.ST',
-    name: 'NOTE',
-  },
-  {
-    symbol: 'VNE-SDB.ST',
-    name: 'Veoneer',
-  },
-  {
-    symbol: 'INVE-B.ST',
-    name: 'Investor',
-  },
-];

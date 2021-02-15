@@ -98,6 +98,7 @@ export const stockReducer = (state, action) => {
   switch (action.type) {
     case StockActions.SET: {
       const data = action.data || [];
+      console.log('datA: ', data);
       const stocks = data.flatMap(getGetStockInformation);
       return { ...state, stocks };
     }
