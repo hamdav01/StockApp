@@ -11,21 +11,26 @@ import {
   mapTo,
   tap,
 } from 'rxjs/operators';
-import { curry } from 'ramda';
+import { curry, flatten, head } from 'ramda';
 
 export const getItemAsyncStorage = (key) =>
   from(AsyncStorage.getItem(key)).pipe(map(JSON.parse));
 
-export const createFromFetchObservables = (key, concurrent = 3) =>
-  getItemAsyncStorage(key).pipe(
-    mergeMap(from),
-    mergeMap(createFromFetchObservable, concurrent),
-    toArray()
-  );
-
 export const setItemAsyncStorage = curry((key, value) =>
   from(AsyncStorage.setItem(key, JSON.stringify(value))).pipe(mapTo(value))
 );
+
+export const createFromFetchObservableSave = ({ symbol, name }) => {
+  return forkJoin([
+    createFromFetchObservable({ symbol, name }),
+    getItemAsyncStorage(StorageKeys.STOCKS),
+  ]).pipe(
+    // TODO: Filter here
+    map(flatten),
+    mergeMap(setItemAsyncStorage(StorageKeys.STOCKS)),
+    map(head)
+  );
+};
 
 export const createFromFetchObservablesArray = (symbolsNames, concurrent = 3) =>
   from(symbolsNames).pipe(
@@ -33,14 +38,6 @@ export const createFromFetchObservablesArray = (symbolsNames, concurrent = 3) =>
     toArray(),
     mergeMap(setItemAsyncStorage(StorageKeys.STOCKS))
   );
-
-export const createFromFetchObservableSave = ({ symbol, name }) => {
-  return forkJoin({
-    fetch: createFromFetchObservable({ symbol, name }),
-    storage: getItemAsyncStorage(StorageKeys.STOCKS),
-  }).pipe(tap((data) => console.log('data: ', data)));
-};
-
 export const createFromFetchObservable = ({ symbol, name }) =>
   fromFetch(
     `https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/get-charts?symbol=${symbol}&interval=5m&range=1d`,
@@ -80,5 +77,4 @@ export const createFromFetchObservable = ({ symbol, name }) =>
 
 export const StorageKeys = {
   STOCKS: 'stocks',
-  STOCK_KEYS: '@stock_keys',
 };

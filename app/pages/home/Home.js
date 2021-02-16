@@ -25,7 +25,6 @@ const useAsynchStorage = () => {
       .pipe(map(setStocksAction))
       .subscribe(dispatchData);
   }, []);
-
   return [currentStocks, dispatchData];
 };
 
@@ -35,11 +34,9 @@ export default function HomeScreen({ route }) {
   React.useEffect(() => {
     const stock = route.params?.stock;
     if (stock !== undefined) {
-      createFromFetchObservableSave(stock).subscribe((data) => {
-        console.log('adtA:', data);
-        dispatchData(addStockAction(data));
-        //  setItemAsyncStorage(StorageKeys.STOCKS, data);
-      });
+      createFromFetchObservableSave(stock)
+        .pipe(map(addStockAction))
+        .subscribe(dispatchData);
     }
   }, [route.params?.stock]);
 

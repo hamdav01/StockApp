@@ -5,11 +5,8 @@ import {
   getAllSymbolsSelector,
   setStocksAction,
 } from '../../reducers/StockReducer';
-import {
-  createFromFetchObservablesArray,
-  setItemAsyncStorage,
-} from '../../utils/Observable';
-import { StorageKeys } from '../../utils/Observable';
+import { createFromFetchObservablesArray } from '../../utils/Observable';
+import { map } from 'rxjs/operators';
 
 const AnimatedRefresh = ({ dispatchData, stocks }) => {
   const rotation = useRef(new Animated.Value(0)).current;
@@ -28,14 +25,12 @@ const AnimatedRefresh = ({ dispatchData, stocks }) => {
       ])
     );
     refreshAnimation.start();
-    createFromFetchObservablesArray(getAllSymbolsSelector(stocks)).subscribe(
-      (data) => {
+    createFromFetchObservablesArray(getAllSymbolsSelector(stocks))
+      .pipe(map(setStocksAction))
+      .subscribe((setStocks) => {
         refreshAnimation.stop();
-        dispatchData(setStocksAction(data));
-        console.log('data: ', data);
-        //    setItemAsyncStorage(StorageKeys.STOCKS, data).subscribe();
-      }
-    );
+        dispatchData(setStocks);
+      });
   };
 
   return (
