@@ -4,12 +4,13 @@ import Header from '../../components/header/Header';
 import StockList from '../../components/stockList/StockList';
 import {
   stockReducer,
-  setStocksAction,
+  initStocksAction,
   addStockAction,
 } from '../../reducers/StockReducer';
 import {
-  createFromFetchObservableSave,
+  createFromFetchObservable,
   getItemAsyncStorage,
+  setItemAsyncStorage,
   StorageKeys,
 } from '../../utils/Observable';
 import { map } from 'rxjs/operators';
@@ -22,9 +23,17 @@ const useAsynchStorage = () => {
   });
   useEffect(() => {
     getItemAsyncStorage(StorageKeys.STOCKS)
-      .pipe(map(setStocksAction))
+      .pipe(map(initStocksAction))
       .subscribe(dispatchData);
   }, []);
+
+  useEffect(() => {
+    console.log('currentStocks: ', currentStocks);
+    if (currentStocks?.stocks?.length > 0) {
+      setItemAsyncStorage(StorageKeys.STOCKS, currentStocks.stocks).subscribe();
+      console.log('its a hitt');
+    }
+  }, [currentStocks]);
   return [currentStocks, dispatchData];
 };
 
@@ -34,7 +43,7 @@ export default function HomeScreen({ route }) {
   React.useEffect(() => {
     const stock = route.params?.stock;
     if (stock !== undefined) {
-      createFromFetchObservableSave(stock)
+      createFromFetchObservable(stock)
         .pipe(map(addStockAction))
         .subscribe(dispatchData);
     }

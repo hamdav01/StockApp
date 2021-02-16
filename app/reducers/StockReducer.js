@@ -60,6 +60,11 @@ export const setStocksAction = (stocks) => ({
   data: stocks,
 });
 
+export const initStocksAction = (stocks) => ({
+  type: StockActions.INIT,
+  data: stocks,
+});
+
 export const addStockAction = (stock) => ({
   type: StockActions.ADD,
   data: stock,
@@ -96,9 +101,12 @@ export const getAllSymbolsSelector = compose(
 
 export const stockReducer = (state, action) => {
   switch (action.type) {
+    case StockActions.INIT: {
+      const data = action.data || [];
+      return { ...state, stocks: data };
+    }
     case StockActions.SET: {
       const data = action.data || [];
-      console.log('datA: ', data);
       const stocks = data.flatMap(getGetStockInformation);
       return { ...state, stocks };
     }

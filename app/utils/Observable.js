@@ -9,34 +9,18 @@ import {
   map,
   filter,
   mapTo,
-  tap,
 } from 'rxjs/operators';
-import { curry, flatten, head } from 'ramda';
 
 export const getItemAsyncStorage = (key) =>
   from(AsyncStorage.getItem(key)).pipe(map(JSON.parse));
 
-export const setItemAsyncStorage = curry((key, value) =>
-  from(AsyncStorage.setItem(key, JSON.stringify(value))).pipe(mapTo(value))
-);
-
-export const createFromFetchObservableSave = ({ symbol, name }) => {
-  return forkJoin([
-    createFromFetchObservable({ symbol, name }),
-    getItemAsyncStorage(StorageKeys.STOCKS),
-  ]).pipe(
-    // TODO: Filter here
-    map(flatten),
-    mergeMap(setItemAsyncStorage(StorageKeys.STOCKS)),
-    map(head)
-  );
-};
+export const setItemAsyncStorage = (key, value) =>
+  from(AsyncStorage.setItem(key, JSON.stringify(value))).pipe(mapTo(value));
 
 export const createFromFetchObservablesArray = (symbolsNames, concurrent = 3) =>
   from(symbolsNames).pipe(
     mergeMap(createFromFetchObservable, concurrent),
-    toArray(),
-    mergeMap(setItemAsyncStorage(StorageKeys.STOCKS))
+    toArray()
   );
 export const createFromFetchObservable = ({ symbol, name }) =>
   fromFetch(
