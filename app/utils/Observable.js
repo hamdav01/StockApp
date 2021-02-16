@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { fromFetch } from 'rxjs/fetch';
-import { forkJoin, from } from 'rxjs';
+import { from } from 'rxjs';
 import {
   catchError,
   switchMap,
@@ -10,6 +10,10 @@ import {
   filter,
   mapTo,
 } from 'rxjs/operators';
+import { addStockAction, initStocksAction } from '../reducers/StockReducer';
+
+export const getInitStocks = () =>
+  getItemAsyncStorage(StorageKeys.STOCKS).pipe(map(initStocksAction));
 
 export const getItemAsyncStorage = (key) =>
   from(AsyncStorage.getItem(key)).pipe(map(JSON.parse));
@@ -22,6 +26,9 @@ export const createFromFetchObservablesArray = (symbolsNames, concurrent = 3) =>
     mergeMap(createFromFetchObservable, concurrent),
     toArray()
   );
+export const getOneStock = (stock) =>
+  createFromFetchObservable(stock).pipe(map(addStockAction));
+  
 export const createFromFetchObservable = ({ symbol, name }) =>
   fromFetch(
     `https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/get-charts?symbol=${symbol}&interval=5m&range=1d`,
