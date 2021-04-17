@@ -89,7 +89,7 @@ const getGetStockInformation = ({ chart, name }) => {
       name,
       symbol,
       today: convertIntoPercentage(previousClose, regularMarketPrice),
-      price: regularMarketPrice,
+      price: toFixed(2, regularMarketPrice),
     },
   ];
 };

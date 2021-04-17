@@ -43,11 +43,10 @@ const StockRow = ({ name, today, price, isOdd }) => {
 
 const styles = StyleSheet.create({
   rowItem: {
-    flex: 0.8,
+    flex: 0.75,
   },
   rowItemAlignLeft: {
-    flex: 0.1,
-    textAlign: 'right',
+    flex: 0.25,
   },
   red: {
     color: 'red',
@@ -62,7 +61,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f4f4f4',
   },
   row: {
+    textAlign: 'right',
     flexDirection: 'row',
-    flex: 1,
+    display: 'flex',
   },
 });

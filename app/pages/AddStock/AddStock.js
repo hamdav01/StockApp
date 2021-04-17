@@ -28,7 +28,7 @@ const AddStockScreen = ({ navigation }) => {
         onPress={() => {
           // Pass params back to home screen
           navigation.navigate('Home', {
-            stock: { symbol: symbol, name: stockName },
+            stock: { symbol: 'VNV.ST', name: 'VNV global' },
           });
         }}
       />

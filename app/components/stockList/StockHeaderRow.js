@@ -3,7 +3,6 @@ import React from 'react';
 import { StockActions } from '../../reducers/StockReducer';
 
 const StockHeaderRow = ({ filterDispatch }) => {
-  
   const sortByNameCaseInsensitive = () =>
     filterDispatch({
       sortKey: 'name',
@@ -41,18 +40,20 @@ const StockHeaderRow = ({ filterDispatch }) => {
 
 const styles = StyleSheet.create({
   rowItemName: {
-    flex: 0.8,
+    flex: 0.75,
   },
   text: {
     fontWeight: 'bold',
+    fontSize: 16,
   },
   rowItem: {
-    flex: 0.1,
+    flex: 0.25,
     textAlign: 'right',
   },
   row: {
     flexDirection: 'row',
-    flex: 1,
+    display: 'flex',
+    justifyContent: 'flex-start',
     borderBottomWidth: 2,
   },
 });

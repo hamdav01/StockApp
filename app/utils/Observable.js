@@ -28,7 +28,7 @@ export const createFromFetchObservablesArray = (symbolsNames, concurrent = 3) =>
   );
 export const getOneStock = (stock) =>
   createFromFetchObservable(stock).pipe(map(addStockAction));
-  
+
 export const createFromFetchObservable = ({ symbol, name }) =>
   fromFetch(
     `https://apidojo-yahoo-finance-v1.p.rapidapi.com/market/get-charts?symbol=${symbol}&interval=5m&range=1d`,

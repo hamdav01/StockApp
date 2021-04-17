@@ -16,7 +16,9 @@ const useAsynchStorage = () => {
   const [currentStocks, dispatchData] = useReducer(stockReducer, {
     stocks: [],
   });
-  useEffect(() => getInitStocks().subscribe(dispatchData), []);
+  useEffect(() => {
+    getInitStocks().subscribe(dispatchData);
+  }, []);
 
   useEffect(() => {
     if (currentStocks?.stocks?.length > 0) {
