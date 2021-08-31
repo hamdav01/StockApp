@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
+import Constants from 'expo-constants';
 
 export const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
     marginLeft: 10,
     marginRight: 10,
+    marginTop: Constants.statusBarHeight,
   },
   header: {
     alignItems: 'center',

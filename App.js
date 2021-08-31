@@ -3,6 +3,7 @@ import HomeScreen from './app/pages/home/Home';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AddStockScreen from './app/pages/AddStock/AddStock';
+
 const Tab = createBottomTabNavigator();
 
 const MyTheme = {

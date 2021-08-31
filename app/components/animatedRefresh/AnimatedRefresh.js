@@ -7,30 +7,47 @@ import {
 } from '../../reducers/StockReducer';
 import { createFromFetchObservablesArray } from '../../utils/Observable';
 import { map } from 'rxjs/operators';
+import { useState } from 'react';
 
 const AnimatedRefresh = ({ dispatchData, stocks }) => {
-  const rotation = useRef(new Animated.Value(0)).current;
+  const rotation = useRef(new Animated.Value(0));
+  const [isAnimating, setIsAnimating] = useState(false);
   const interpolateRotation = rotation.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
+
   const updateStockValues = () => {
-    const refreshAnimation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(rotation, {
+    if (!isAnimating) {
+      const refreshAnimation = Animated.loop(
+        Animated.timing(rotation.current, {
           toValue: 1,
           duration: 1000,
-          useNativeDriver: true, // To make use of native driver for performance
+          useNativeDriver: true,
         }),
-      ])
-    );
-    refreshAnimation.start();
-    createFromFetchObservablesArray(getAllSymbolsSelector(stocks))
-      .pipe(map(setStocksAction))
-      .subscribe((setStocks) => {
-        refreshAnimation.stop();
-        dispatchData(setStocks);
-      });
+        { iterations: -1 }
+      );
+      console.log('rotation.current.value: ', rotation);
+      refreshAnimation.start();
+      setIsAnimating(true);
+      createFromFetchObservablesArray(getAllSymbolsSelector(stocks))
+        .pipe(map(setStocksAction))
+        .subscribe((setStocks) => {
+          // const resetAnimation = Animated.timing(rotation, {
+          //   toValue: 0,
+          //   duration: 1000,
+          //   useNativeDriver: true,
+          // });
+          console.log(' 1000 * rotation.current.value: ', 1000 * rotation);
+          console.log('rotation.current.value: ', rotation);
+          // resetAnimation.start(() => {
+          //   setIsAnimating(false);
+          //   refreshAnimation.stop();
+          //   rotation.setValue(0);
+          //   dispatchData(setStocks);
+          // });
+        });
+    }
   };
 
   return (
