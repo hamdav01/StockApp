@@ -1,2 +1,2 @@
 # StockApp
-App to track stocks
+App for tracking specific stock values
